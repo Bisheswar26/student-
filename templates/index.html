@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpendWise - Student Expense Tracker</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">₹</div>
+            <div>
+                <h2>SpendWise</h2>
+                <small>Student Finance</small>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-btn active" onclick="showPage('dashboard')">
+                🏠 Dashboard
+            </button>
+
+            <button class="nav-btn" onclick="showPage('expenses')">
+                💳 Expenses
+            </button>
+
+            <button class="nav-btn" onclick="showPage('analytics')">
+                📊 Analytics
+            </button>
+
+            <button class="nav-btn" onclick="showPage('goals')">
+                🎯 Savings Goals
+            </button>
+        </nav>
+
+        <div class="tip">
+            💡 <b>Smart Tip</b>
+            <p id="smartTip">
+                Track every small expense. Small amounts add up.
+            </p>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="header">
+
+            <div>
+                <p class="subtitle">STUDENT MONEY MANAGEMENT</p>
+
+                <h1>
+                    Welcome to SpendWise 👋
+                </h1>
+
+                <p class="description">
+                    Track your money. Control your spending. Build better habits.
+                </p>
+            </div>
+
+            <button class="add-btn" onclick="openExpenseModal()">
+                + Add Expense
+            </button>
+
+        </header>
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section id="dashboard" class="page active">
+
+            <!-- STAT CARDS -->
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">₹</div>
+
+                    <div>
+                        <span>Monthly Budget</span>
+                        <h2 id="budgetAmount">₹5,000</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">↗️</div>
+
+                    <div>
+                        <span>Total Spent</span>
+                        <h2 id="spentAmount">₹0</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon green">✓</div>
+
+                    <div>
+                        <span>Remaining</span>
+                        <h2 id="remainingAmount">₹5,000</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">⌁</div>
+
+                    <div>
+                        <span>Daily Average</span>
+                        <h2 id="dailyAverage">₹0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- TWO CARDS -->
+
+            <div class="two-column">
+
+                <!-- BUDGET -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Budget Overview</h2>
+
+                            <p>
+                                Your monthly spending progress
+                            </p>
+                        </div>
+
+                        <button onclick="editBudget()" class="link-btn">
+                            Edit Budget
+                        </button>
+
+                    </div>
+
+
+                    <div class="budget-number">
+
+                        <strong id="budgetPercent">
+                            0%
+                        </strong>
+
+                        <span>
+                            of your monthly budget used
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress">
+                        <div id="progressBar"></div>
+                    </div>
+
+
+                    <div class="budget-info">
+
+                        <span>
+                            Spent:
+                            <b id="budgetSpent">₹0</b>
+                        </span>
+
+                        <span>
+                            Budget:
+                            <b id="budgetTotal">₹5,000</b>
+                        </span>
+
+                    </div>
+
+                    <div id="budgetWarning"></div>
+
+                </div>
+
+
+                <!-- NEED VS WANT -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Need vs Want</h2>
+
+                            <p>
+                                Understand your spending choices
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="need-want">
+
+                        <div class="donut" id="donut">
+
+                            <div>
+                                <strong id="needPercent">
+                                    0%
+                                </strong>
+
+                                <small>
+                                    Needs
+                                </small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="legend">
+
+                            <p>
+                                <span class="dot need"></span>
+                                Needs
+
+                                <b id="needAmount">
+                                    ₹0
+                                </b>
+                            </p>
+
+                            <p>
+                                <span class="dot want"></span>
+                                Wants
+
+                                <b id="wantAmount">
+                                    ₹0
+                                </b>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CATEGORY + RECENT -->
+
+            <div class="two-column">
+
+                <!-- CATEGORY -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Spending by Category</h2>
+
+                            <p>
+                                This month's breakdown
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div id="categoryList">
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT EXPENSES -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Recent Expenses</h2>
+
+                            <p>
+                                Latest transactions
+                            </p>
+                        </div>
+
+                        <button
+                            onclick="showPage('expenses')"
+                            class="link-btn">
+                            View All
+                        </button>
+
+                    </div>
+
+                    <div id="recentExpenses">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= EXPENSES ================= -->
+
+        <section id="expenses" class="page">
+
+            <div class="section-header">
+
+                <div>
+                    <h1>All Expenses</h1>
+
+                    <p>
+                        Add and manage your daily spending.
+                    </p>
+                </div>
+
+                <button
+                    class="add-btn"
+                    onclick="openExpenseModal()">
+
+                    + Add Expense
+
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="filters">
+
+                <input
+                    id="search"
+                    type="text"
+                    placeholder="🔎 Search expenses..."
+                    oninput="displayExpenses()"
+                >
+
+
+                <select
+                    id="categoryFilter"
+                    onchange="displayExpenses()">
+
+                    <option value="all">
+                        All Categories
+                    </option>
+
+                    <option value="Food">
+                        🍔 Food
+                    </option>
+
+                    <option value="Travel">
+                        🚌 Travel
+                    </option>
+
+                    <option value="Education">
+                        📚 Education
+                    </option>
+
+                    <option value="Shopping">
+                        🛍️ Shopping
+                    </option>
+
+                    <option value="Entertainment">
+                        🎮 Entertainment
+                    </option>
+
+                    <option value="Other">
+                        📦 Other
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="typeFilter"
+                    onchange="displayExpenses()">
+
+                    <option value="all">
+                        Need + Want
+                    </option>
+
+                    <option value="need">
+                        Needs
+                    </option>
+
+                    <option value="want">
+                        Wants
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="card table-card">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Expense</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="expenseTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= ANALYTICS ================= -->
+
+        <section id="analytics" class="page">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h1>Spending Analytics</h1>
+
+                    <p>
+                        Understand where your money goes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="analytics-grid">
+
+                <div class="card">
+
+                    <h2>Category Distribution</h2>
+
+                    <canvas
+                        id="categoryChart"
+                        width="500"
+                        height="300">
+                    </canvas>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>7-Day Spending</h2>
+
+                    <canvas
+                        id="weeklyChart"
+                        width="500"
+                        height="300">
+                    </canvas>
+
+                </div>
+
+            </div>
+
+
+            <div class="insights">
+
+                <div class="insight">
+
+                    🔥
+
+                    <div>
+
+                        <b>Highest Category</b>
+
+                        <p id="highestCategory">
+                            No expenses yet
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insight">
+
+                    💰
+
+                    <div>
+
+                        <b>Potential Savings</b>
+
+                        <p id="potentialSavings">
+                            ₹0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insight">
+
+                    📊
+
+                    <div>
+
+                        <b>Average Expense</b>
+
+                        <p id="averageExpense">
+                            ₹0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= GOALS ================= -->
+
+        <section id="goals" class="page">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h1>Savings Goals</h1>
+
+                    <p>
+                        Turn your plans into measurable progress.
+                    </p>
+
+                </div>
+
+                <button
+                    class="add-btn"
+                    onclick="openGoalModal()">
+
+                    + Add Goal
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="goalsContainer"
+                class="goals">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= EXPENSE MODAL ================= -->
+
+<div
+    id="expenseModal"
+    class="modal">
+
+    <div class="modal-box">
+
+        <button
+            class="close"
+            onclick="closeExpenseModal()">
+
+            ×
+
+        </button>
+
+
+        <h2>Add Expense</h2>
+
+        <p>
+            Record where your money went.
+        </p>
+
+
+        <form onsubmit="addExpense(event)">
+
+            <label>
+
+                Amount (₹)
+
+                <input
+                    id="amount"
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="250">
+
+            </label>
+
+
+            <label>
+
+                Description
+
+                <input
+                    id="description"
+                    required
+                    placeholder="College lunch">
+
+            </label>
+
+
+            <div class="form-row">
+
+                <label>
+
+                    Category
+
+                    <select id="category">
+
+                        <option value="Food">
+                            🍔 Food
+                        </option>
+
+                        <option value="Travel">
+                            🚌 Travel
+                        </option>
+
+                        <option value="Education">
+                            📚 Education
+                        </option>
+
+                        <option value="Shopping">
+                            🛍️ Shopping
+                        </option>
+
+                        <option value="Entertainment">
+                            🎮 Entertainment
+                        </option>
+
+                        <option value="Other">
+                            📦 Other
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+                <label>
+
+                    Type
+
+                    <select id="type">
+
+                        <option value="need">
+                            Need
+                        </option>
+
+                        <option value="want">
+                            Want
+                        </option>
+
+                    </select>
+
+                </label>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <label>
+
+                    Date
+
+                    <input
+                        id="date"
+                        type="date"
+                        required>
+
+                </label>
+
+
+                <label>
+
+                    Payment
+
+                    <select id="payment">
+
+                        <option>
+                            UPI
+                        </option>
+
+                        <option>
+                            Cash
+                        </option>
+
+                        <option>
+                            Card
+                        </option>
+
+                    </select>
+
+                </label>
+
+            </div>
+
+
+            <button
+                class="submit-btn"
+                type="submit">
+
+                Save Expense
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= BUDGET MODAL ================= -->
+
+<div
+    id="budgetModal"
+    class="modal">
+
+    <div class="modal-box small">
+
+        <button
+            class="close"
+            onclick="closeBudgetModal()">
+
+            ×
+
+        </button>
+
+
+        <h2>Set Monthly Budget</h2>
+
+
+        <form onsubmit="saveBudget(event)">
+
+            <label>
+
+                Monthly Budget (₹)
+
+                <input
+                    id="newBudget"
+                    type="number"
+                    min="1"
+                    required>
+
+            </label>
+
+
+            <button
+                class="submit-btn">
+
+                Save Budget
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= GOAL MODAL ================= -->
+
+<div
+    id="goalModal"
+    class="modal">
+
+    <div class="modal-box small">
+
+        <button
+            class="close"
+            onclick="closeGoalModal()">
+
+            ×
+
+        </button>
+
+
+        <h2>Create Savings Goal</h2>
+
+
+        <form onsubmit="addGoal(event)">
+
+            <label>
+
+                Goal Name
+
+                <input
+                    id="goalName"
+                    required
+                    placeholder="New Laptop">
+
+            </label>
+
+
+            <label>
+
+                Target Amount (₹)
+
+                <input
+                    id="goalTarget"
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="50000">
+
+            </label>
+
+
+            <label>
+
+                Already Saved (₹)
+
+                <input
+                    id="goalSaved"
+                    type="number"
+                    min="0"
+                    value="0">
+
+            </label>
+
+
+            <button class="submit-btn">
+
+                Create Goal
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
